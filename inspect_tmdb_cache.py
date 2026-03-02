@@ -46,8 +46,19 @@ def main():
         print(f"\n🎬 Sample Movies:")
         sample = df.sample(min(5, len(df)))[['movieId', 'title', 'release_date', 'vote_average', 'genres']]
         for _, row in sample.iterrows():
+            genres = row['genres']
+            if isinstance(genres, (list, tuple, set)):
+                genres_text = ', '.join(map(str, genres)) if genres else 'N/A'
+            elif hasattr(genres, 'tolist'):
+                genres_list = genres.tolist()
+                genres_text = ', '.join(map(str, genres_list)) if genres_list else 'N/A'
+            elif pd.isna(genres):
+                genres_text = 'N/A'
+            else:
+                genres_text = str(genres)
+
             print(f"   • {row['title']} ({row['release_date']}) - ⭐ {row['vote_average']}")
-            print(f"     Genres: {', '.join(row['genres']) if row['genres'] else 'N/A'}")
+            print(f"     Genres: {genres_text}")
         
         print(f"\n📊 Statistics:")
         print(f"   Avg runtime: {df['runtime'].mean():.1f} min")
